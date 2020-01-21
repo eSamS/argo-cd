@@ -1,0 +1,18 @@
+name: Image
+
+on:
+  push:
+    branches:
+      - master
+      - ci-image
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - run: docker login docker.pkg.github.com --username $USERNAME --password $PASSWORD
+        env:
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.TOKEN }}
+      - run: make image DOCKER_PUSH=true IMAGE_NAMESPACE=docker.pkg.github.com/argoproj/argocd IMAGE_TAG=$(cat ./VERSION)-${GITHUB_SHA::8}
